@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sut[
+    <!ENTITY sut_ip "10.89.88.5">
+    <!ENTITY sut_password "Xpiv@1234">
+    <!ENTITY bmc_ip "10.89.88.150">
+    <!ENTITY bmc_user "root">
+    <!ENTITY bmc_password "calvin">
+    <!ENTITY bmc_type "idrac">
+    <!ENTITY sol_activate_cmd "console com2">
+    <!ENTITY bios_entry_prompt "System Utilitie">
+]>
+<core>
+    <log path=""/> <!--Mona don't this log is for what ans I whether need to add in -->
+    <host>
+        <logging format="jUnit"/>
+        <root>C:\workspace</root>
+        <os name="Windows" version="10">
+            <kernel version="10.0.14393"/>
+        </os>
+    </host>
+    <suts>
+        <sut ip="&sut_ip;" id="01">
+            <platform type="dell" boardname="X30" name="Lagos"/>
+            <silicon>
+                <cpu>
+                    <family>SPR</family>
+                    <num_of_sockets>2</num_of_sockets>
+                    <stepping>E2</stepping>
+                </cpu>
+                <pch>
+                    <family>EBG</family>
+                </pch>
+				<upi_topology>
+				    <!--pair>(socket,port),(peer_socket,peer_port)<pair-->
+				    <socket_port_pair>(0,0),(1,2)</socket_port_pair>
+					<socket_port_pair>(0,1),(1,1)</socket_port_pair>
+					<socket_port_pair>(0,2),(1,0)</socket_port_pair>
+				</upi_topology>
+                <bmc>
+                    <ipv4>&bmc_ip;</ipv4>
+                    <credentials user="&bmc_user;" password="&bmc_password;"/>
+                    <vendor>&bmc_type;</vendor>
+                </bmc>
+            </silicon>
+            <providers>
+                <sut_os name="Windows" subtype="windows" version="10" kernel="3.10" id="Windows Boot Manager">
+                    <shutdown_delay>5.0</shutdown_delay>
+                    <driver>
+                        <ssh>
+                            <credentials user="administrator" password="xxx"/>
+                            <ipv4>&sut_ip;</ipv4>
+                            <port>22</port>
+                        </ssh>
+                    </driver>
+                </sut_os>
+                <!--<sut_os name="Linux" subtype="redhat" version="8.6" kernel="4.18" id="Red Hat Enterprise Linux">-->
+                <sut_os name="Linux" subtype="redhat" version="8.6" kernel="4.18" id="CentOS Linux">
+                    <shutdown_delay>5.0</shutdown_delay>
+                    <driver>
+                        <ssh>
+                            <credentials user="root" password="&sut_password;"/>
+                            <ipv4>&sut_ip;</ipv4>
+                            <port>22</port>
+                        </ssh>
+                    </driver>
+                </sut_os>
+
+                <sut_os name="Linux" subtype="vmware" version="8.2" kernel="4.18" id="VMware ESXi">
+                    <shutdown_delay>5.0</shutdown_delay>
+                    <driver>
+                        <ssh>
+                            <credentials user="root" password="Xpiv@1234"/>
+                            <ipv4>10.89.88.5</ipv4>
+                            <port>22</port>
+                        </ssh>
+                    </driver>
+                </sut_os>
+
+                <sut_os name="Linux" subtype="fedora" version="8.2" kernel="4.18" id="Fedora">
+                    <shutdown_delay>5.0</shutdown_delay>
+                    <driver>
+                        <ssh>
+                            <credentials user="root" password="xxx"/>
+                            <ipv4>&sut_ip;</ipv4>
+                            <port>22</port>
+                        </ssh>
+                    </driver>
+                </sut_os>
+
+                <sut_os name="Linux" subtype="vmware" version="8.2" kernel="4.18" id="VMware ESXi">
+                    <shutdown_delay>5.0</shutdown_delay>
+                    <driver>
+                        <ssh>
+                            <credentials user="root" password="xxx"/>
+                            <ipv4>&sut_ip;</ipv4>
+                            <port>22</port>
+                        </ssh>
+                    </driver>
+                </sut_os>
+
+                <console_log>
+                    <runwith/>
+                    <logpath>C:\toolkit_logs\bios.log</logpath>
+                    <driver>
+                        <sol>
+                            <address>&bmc_ip;</address>
+                            <port>22</port>
+                            <timeout>5</timeout>
+                            <credentials user="&bmc_user;" password="&bmc_password;"/>
+                            <cmd>&sol_activate_cmd;</cmd>
+                        </sol>
+                    </driver>
+                    <timestamp>true</timestamp>
+                </console_log>
+
+                <ac>
+                    <driver>
+                        <pduusb>
+                            <outlets>
+                                <outlet>1</outlet>
+                                <outlet>2</outlet>
+                            </outlets>
+                        </pduusb>
+                    </driver>
+                    <timeout>
+                        <power_on>5</power_on>
+                        <power_off>20</power_off>
+                    </timeout>
+                </ac>
+
+                <dc>
+					<driver>
+						<redfish>
+							<bmc_type>&bmc_type;</bmc_type>
+							<ip>&bmc_ip;</ip>
+							<username>&bmc_user;</username>
+							<password>&bmc_password;</password>
+						</redfish>
+					</driver>
+					<timeout>
+						<power_on>5</power_on>
+						<power_off>20</power_off>
+						<power_off_button_down>2</power_off_button_down>
+					</timeout>
+				</dc>
+
+				<physical_control>
+						<driver>
+							<redfish>
+								<bmc_type>&bmc_type;</bmc_type>
+								<ip>&bmc_ip;</ip>
+								<username>&bmc_user;</username>
+								<password>&bmc_password;</password>
+							</redfish>
+						</driver>
+						<timeout>
+							<usbswitch>4</usbswitch>
+							<clearcmos>3</clearcmos>
+						</timeout>
+				</physical_control>
+
+                <bios_setupmenu>
+                    <driver>
+                        <sol>
+                            <address>&bmc_ip;</address>
+                            <port>22</port>
+                            <timeout>5</timeout>
+                            <credentials user="&bmc_user;" password="&bmc_password;"/>
+                            <cmd>&sol_activate_cmd;</cmd>
+                        </sol>
+                    </driver>
+                    <bios_entry prompt="&bios_entry_prompt;"/>
+                    <efishell_entry select_item="UEFI Internal Shell">
+                        <path>
+                            <node>Boot Manager Menu</node>
+                        </path>
+                    </efishell_entry>
+                    <continue select_item="Continue"/>
+                    <reset press_key="\33R\33r\33R" parse="False"/>
+                </bios_setupmenu>
+
+                <bios_bootmenu>
+                    <driver>
+                        <sol>
+                            <address>&bmc_ip;</address>
+                            <port>22</port>
+                            <timeout>5</timeout>
+                            <credentials user="&bmc_user;" password="&bmc_password;"/>
+                            <cmd>&sol_activate_cmd;</cmd>
+                        </sol>
+                    </driver>
+                    <bios_entry prompt="&bios_entry_prompt;"/>
+                    <efishell_entry select_item="UEFI Internal Shell"/>
+                </bios_bootmenu>
+
+                <uefi_shell>
+                    <driver>
+                        <sol>
+                            <address>&bmc_ip;</address>
+                            <port>22</port>
+                            <timeout>5</timeout>
+                            <credentials user="&bmc_user;" password="&bmc_password;"/>
+                            <cmd>&sol_activate_cmd;</cmd>
+                        </sol>
+                    </driver>
+                </uefi_shell>
+
+                <bios>
+                    <driver>
+						<redfish>
+							<bmc_type>&bmc_type;</bmc_type>
+							<ip>&bmc_ip;</ip>
+							<username>&bmc_user;</username>
+							<password>&bmc_password;</password>
+						</redfish>
+                    </driver>
+                </bios>
+
+				<flash>
+					<driver>
+						<redfish>
+							<bmc_type>&bmc_type;</bmc_type>
+							<ip>&bmc_ip;</ip>
+							<username>&bmc_user;</username>
+							<password>&bmc_password;</password>
+						</redfish>
+					</driver>
+				</flash>
+
+				<console>
+                    <driver>
+                        <ssh>
+                            <credentials user="root" password="&sut_password;"/>
+                            <ipv4>&sut_ip;</ipv4>
+                        </ssh>
+                    </driver>
+                    <credentials user="root" password="&sut_password;"/>
+                    <login_time_delay>60</login_time_delay>
+                </console>
+
+                <silicon_debug>
+                    <driver>
+                        <xdp type="ITP" />
+                    </driver>
+                </silicon_debug>
+
+                <silicon_reg>
+                    <driver>
+                        <cscripts>
+                            <debugger_interface_type>ITP</debugger_interface_type>
+                            <silicon>
+                                <cpu_family>SPR</cpu_family>
+                                <pch_family>EMG</pch_family>
+                            </silicon>
+                        </cscripts>
+                    </driver>
+                </silicon_reg>
+
+            </providers>
+        </sut>
+    </suts>
+</core>
